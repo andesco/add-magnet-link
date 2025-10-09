@@ -1,0 +1,22 @@
+{
+  "name": "add-magnet-link",
+  "version": "0.2.0",
+  "description": "easyily add magnet links via a simple URL and your qBittorrent API endpoint",
+  "main": "index.js",
+   "scripts": {
+     "deploy": "wrangler deploy --config wrangler.local.toml",
+     "dev": "wrangler dev --config wrangler.local.toml"
+   },
+  "keywords": [
+    "cloudflare",
+    "worker",
+    "qbittorrent",
+    "passkey",
+    "webauthn"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
