@@ -7,8 +7,9 @@ account_id = ""
 
 [vars]
 API_BASE_URL = ""
-SECRET_KEY = ""
 # optional:
 # only set if using Cloudflare Access to protect worker
 # API_USERNAME = ""
 # API_PASSWORD = ""
+# automatically during deployment:
+# SECRET_KEY = ""

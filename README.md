@@ -65,9 +65,12 @@ A browser extension that supports URL redirect rules can be used to redirect mag
 Variable       | Description                   | Type
 ---------------|-------------------------------|----------------
 `API_BASE_URL` | qBittorrent API URL           | Text
-`SECRET_KEY`   | random string to sign cookies | Secret
-`API_USERNAME` | qBittorrent API username      | Optional Secret
-`API_PASSWORD` | qBittorrent API password      | Optional Secret
+`SECRET_KEY`   | random string to sign cookies | Secret · auto-generated
+`API_USERNAME` | qBittorrent API username      | Secret · optional
+`API_PASSWORD` | qBittorrent API password      | Secret · optional
+
+> [!Note]
+> A new `SECRET_KEY` is automatically generated when you run `npm run deploy`. This invalidates existing authentication cookies.
 
 ### Authentication
 
@@ -85,9 +88,9 @@ Variable       | Description                   | Type
 
 #### Test Magnet Links
 
-- Cosmos Laundromat: [magnet link][Cosmos Laundromat]
-- Sintel: [magnet link][Sintel]
-- Tears of Steel: [magnet link][Tears of Steel]
+- [Cosmos Laundromat]
+- [Sintel]
+- [Tears of Steel]
 - [other public domain magnet links](https://webtorrent.io/free-torrents)
 
 > [!Note]
@@ -95,6 +98,6 @@ Variable       | Description                   | Type
 
 [qBittorrent API]: https://github.com/qbittorrent/qBittorrent/wiki#WebUI-API
 
-[Cosmos Laundromat]: <magnet:?xt=urn:btih:c9e15763f722f23e98a29decdfae341b98d53056&amp;dn=Cosmos+Laundromat&amp;tr=udp%3A%2F%2Fexplodie.org%3A6969&amp;tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&amp;tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&amp;tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&amp;tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&amp;tr=wss%3A%2F%2Ftracker.btorrent.xyz&amp;tr=wss%3A%2F%2Ftracker.fastcast.nz&amp;tr=wss%3A%2F%2Ftracker.openwebtorrent.com&amp;ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2F&amp;xs=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2Fcosmos-laundromat.torrent">
-[Sintel]: <magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&amp;dn=Sintel&amp;tr=udp%3A%2F%2Fexplodie.org%3A6969&amp;tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&amp;tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&amp;tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&amp;tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&amp;tr=wss%3A%2F%2Ftracker.btorrent.xyz&amp;tr=wss%3A%2F%2Ftracker.fastcast.nz&amp;tr=wss%3A%2F%2Ftracker.openwebtorrent.com&amp;ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2F&amp;xs=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2Fsintel.torrent>
-[Tears of Steel]: <magnet:?xt=urn:btih:209c8226b299b308beaf2b9cd3fb49212dbd13ec&amp;dn=Tears+of+Steel&amp;tr=udp%3A%2F%2Fexplodie.org%3A6969&amp;tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&amp;tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&amp;tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&amp;tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&amp;tr=wss%3A%2F%2Ftracker.btorrent.xyz&amp;tr=wss%3A%2F%2Ftracker.fastcast.nz&amp;tr=wss%3A%2F%2Ftracker.openwebtorrent.com&amp;ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2F&amp;xs=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2Ftears-of-steel.torrent>
+[Cosmos Laundromat]: <magnet:?xt=urn:btih:c9e15763f722f23e98a29decdfae341b98d53056&amp;dn=Cosmos+Laundromat">
+[Sintel]: <magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&amp;dn=Sintel
+[Tears of Steel]: <magnet:?xt=urn:btih:209c8226b299b308beaf2b9cd3fb49212dbd13ec&amp;dn=Tears+of+Steel>

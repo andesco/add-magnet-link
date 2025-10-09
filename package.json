@@ -4,8 +4,12 @@
   "description": "easyily add magnet links via a simple URL and your qBittorrent API endpoint",
   "main": "index.js",
    "scripts": {
-     "deploy": "wrangler deploy --config wrangler.local.toml",
-     "dev": "wrangler dev --config wrangler.local.toml"
+     "secret": "node -e \"process.stdout.write(require('crypto').randomBytes(32).toString('base64'))\" | wrangler secret put SECRET_KEY",
+     "secret:local": "node -e \"process.stdout.write(require('crypto').randomBytes(32).toString('base64'))\" | wrangler secret put SECRET_KEY --config wrangler.local.toml",
+     "deploy": "npm run secret && wrangler deploy",
+     "deploy:local": "npm run secret:local && wrangler deploy --config wrangler.local.toml",
+     "dev": "wrangler dev",
+     "dev:local": "wrangler dev --config wrangler.local.toml"
    },
   "keywords": [
     "cloudflare",
