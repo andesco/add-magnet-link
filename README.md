@@ -31,8 +31,9 @@ Safari does not allow web apps to handle [`magnet:`](//wikipedia.org/wiki/Magnet
 
    [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/andesco/add-magnet-link)
 
-2. Set this text variables to point to your qBittorrent API:\
+2. Set these variables to access your qBittorrent API:\
    `API_BASE_URL`
+   `SECRET_KEY`
 
 3. Visit your worker URL to authenticate:\
   `https://add-magnet-link.{user}.workers.dev`
@@ -61,11 +62,12 @@ A browser extension that supports URL redirect rules can be used to redirect mag
 
 ### Environment Variables & Secrets
 
-Variable       | Description              | Type
----------------|--------------------------|----------------
-`API_BASE_URL` | qBittorrent API URL      | Required Text
-`API_USERNAME` | qBittorrent API username | Optional Secret
-`API_PASSWORD` | qBittorrent API password | Optional Secret
+Variable       | Description                   | Type
+---------------|-------------------------------|----------------
+`API_BASE_URL` | qBittorrent API URL           | Text
+`SECRET_KEY`   | random string to sign cookies | Secret
+`API_USERNAME` | qBittorrent API username      | Optional Secret
+`API_PASSWORD` | qBittorrent API password      | Optional Secret
 
 ### Authentication
 
@@ -83,9 +85,10 @@ Variable       | Description              | Type
 
 #### Test Magnet Links
 
-Cosmos Laundromat: [magnet link][Cosmos Laundromat] \
-Sintel: [magnet link][Sintel] \
-Tears of Steel: [magnet link][Tears of Steel]
+- Cosmos Laundromat: [magnet link][Cosmos Laundromat]
+- Sintel: [magnet link][Sintel]
+- Tears of Steel: [magnet link][Tears of Steel]
+- [other public domain magnet links](https://webtorrent.io/free-torrents)
 
 > [!Note]
 > GitHub does not render `magnet:` scheme links.

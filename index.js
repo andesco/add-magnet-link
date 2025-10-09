@@ -82,24 +82,34 @@ async function generateHMAC(message, key) {
 }
 
 async function verifyCookie(cookieValue, secretKey) {
-  if (!cookieValue) return null;
+  if (!cookieValue) {
+    return null;
+  }
 
   try {
     const [timestamp, sidData, signature] = cookieValue.split('.');
-    if (!timestamp || !sidData || !signature) return null;
+
+    if (!timestamp || !sidData || !signature) {
+      return null;
+    }
 
     const expectedSignature = await generateHMAC(`${timestamp}.${sidData}`, secretKey);
-    if (signature !== expectedSignature) return null;
+    if (signature !== expectedSignature) {
+      return null;
+    }
 
     const issueTime = parseInt(timestamp);
     const oneYear = 365 * 24 * 60 * 60 * 1000;
-    if ((Date.now() - issueTime) >= oneYear) return null;
+    const age = Date.now() - issueTime;
+    if (age >= oneYear) {
+      return null;
+    }
 
     // Decode SID data: format is "name:value"
     const decoded = atob(sidData);
     const [name, value] = decoded.split(':', 2);
     return { name, value };
-  } catch {
+  } catch (e) {
     return null;
   }
 }
@@ -372,10 +382,12 @@ export default {
            const authCookie = await generateAuthCookie(sidCookie, secretKey);
            const oneYear = 365 * 24 * 60 * 60;
 
+           const cookieHeader = `auth=${authCookie}; HttpOnly; Secure; SameSite=Lax; Max-Age=${oneYear}; Path=/`;
+
            return new Response('Authentication successful', {
              status: 200,
              headers: {
-               'Set-Cookie': `auth=${authCookie}; HttpOnly; Secure; SameSite=Strict; Max-Age=${oneYear}; Path=/`
+               'Set-Cookie': cookieHeader
              }
            });
          } catch (error) {
@@ -404,28 +416,58 @@ export default {
 
        const hasQbAuth = apiBaseUrl && apiUsername && apiPassword;
 
-       // Show auth page
+       // Show auth page (redirect to home if already authenticated)
        if (pathSegments[0] === 'auth') {
-         return new Response(getAuthPage(), {
-           headers: { 'Content-Type': 'text/html' }
-         });
-       }
-
-       // Check authentication for all other requests (skip if qBittorrent auth is configured)
-       if (!hasQbAuth) {
+         // Check if user is already authenticated
          const cookies = request.headers.get('Cookie');
          const authCookie = cookies?.split(';')
            .find(c => c.trim().startsWith('auth='))
-           ?.split('=')[1];
+           ?.split('=').slice(1).join('=');
 
          const sidCookie = await verifyCookie(authCookie, secretKey);
-         if (!sidCookie) {
-           return Response.redirect(`${url.origin}/auth`, 302);
+         if (sidCookie && apiBaseUrl) {
+           // Test if the SID is still valid with qBittorrent
+           try {
+             const testResponse = await fetch(`${apiBaseUrl}/api/v2/app/version`, {
+               headers: {
+                 'Referer': apiBaseUrl,
+                 'Origin': apiBaseUrl,
+                 'Cookie': `${sidCookie.name}=${sidCookie.value}`
+               }
+             });
+             if (testResponse.ok) {
+               // SID is valid, redirect to home
+               return Response.redirect(`${url.origin}/`, 302);
+             }
+             // SID invalid, clear cookie and show login page
+           } catch (error) {
+             // SID test failed, clear cookie and show login page
+           }
          }
+
+         // Show auth page (clearing any invalid cookie)
+         const headers = { 'Content-Type': 'text/html' };
+         if (sidCookie) {
+           // Had a cookie but it was invalid, clear it
+           headers['Set-Cookie'] = 'auth=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/';
+         }
+         return new Response(getAuthPage(), { headers });
        }
 
        // Show home page at root if authenticated
        if (pathSegments.length === 0) {
+         // Check authentication for root page (skip if qBittorrent auth is configured)
+         if (!hasQbAuth) {
+           const cookies = request.headers.get('Cookie');
+           const authCookie = cookies?.split(';')
+             .find(c => c.trim().startsWith('auth='))
+             ?.split('=').slice(1).join('=');
+
+           const sidCookie = await verifyCookie(authCookie, secretKey);
+           if (!sidCookie) {
+             return Response.redirect(`${url.origin}/auth`, 302);
+           }
+         }
          if (hasQbAuth) {
            // qBittorrent auth is configured, no need for web auth
            return new Response(getHomePage(), {
@@ -436,7 +478,7 @@ export default {
            const cookies = request.headers.get('Cookie');
            const authCookie = cookies?.split(';')
              .find(c => c.trim().startsWith('auth='))
-             ?.split('=')[1];
+             ?.split('=').slice(1).join('=');
 
            const sidCookie = await verifyCookie(authCookie, secretKey);
            if (sidCookie && apiBaseUrl) {
@@ -450,12 +492,24 @@ export default {
                  }
                });
                if (!testResponse.ok) {
-                 // SID not functional, redirect to auth
-                 return Response.redirect(`${url.origin}/auth`, 302);
+                 // SID not functional, clear cookie and redirect to auth
+                 return new Response('Redirecting to login...', {
+                   status: 302,
+                   headers: {
+                     'Location': `${url.origin}/auth`,
+                     'Set-Cookie': `auth=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/`
+                   }
+                 });
                }
              } catch (error) {
-               // Authentication failed, redirect to auth
-               return Response.redirect(`${url.origin}/auth`, 302);
+               // Authentication failed, clear cookie and redirect to auth
+               return new Response('Redirecting to login...', {
+                 status: 302,
+                 headers: {
+                   'Location': `${url.origin}/auth`,
+                   'Set-Cookie': `auth=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/`
+                 }
+               });
              }
            }
 
@@ -488,7 +542,9 @@ export default {
         const cookies = request.headers.get('Cookie');
         const authCookie = cookies?.split(';')
           .find(c => c.trim().startsWith('auth='))
-          ?.split('=')[1];
+          ?.split('=')
+          .slice(1)
+          .join('=');
 
         sidCookie = await verifyCookie(authCookie, secretKey);
         if (!sidCookie) {
