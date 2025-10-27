@@ -135,13 +135,19 @@ function getResultPage(result) {
   const statusClass = isSuccess ? 'success' : 'warning';
 
   return `<!DOCTYPE html>
-<html>
+<html data-theme="light">
 <head>
     <meta charset="UTF-8">
     <title>Add Magnet Link: ${isSuccess ? 'Success' : 'Warning'}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <link rel="stylesheet" href="/style.css">
+    <script>
+        // Support light and dark mode based on system preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
 </head>
 <body>
     <main class="container">
@@ -174,13 +180,19 @@ function getResultPage(result) {
 
  function getHomePage() {
    return `<!DOCTYPE html>
- <html>
+ <html data-theme="light">
  <head>
      <meta charset="UTF-8">
      <title>Add Magnet Link</title>
      <meta name="viewport" content="width=device-width, initial-scale=1">
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
      <link rel="stylesheet" href="/style.css">
+     <script>
+         // Support light and dark mode based on system preference
+         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+             document.documentElement.setAttribute('data-theme', 'dark');
+         }
+     </script>
  </head>
  <body>
      <main class="container">
@@ -221,13 +233,19 @@ function getResultPage(result) {
 
 function getAuthPage(returnPath = '/') {
   return `<!DOCTYPE html>
-<html>
+<html data-theme="light">
 <head>
     <meta charset="UTF-8">
     <title>Add Magnet Link: Authenticate</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <link rel="stylesheet" href="/style.css">
+    <script>
+        // Support light and dark mode based on system preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
 </head>
 <body>
     <main class="container">
@@ -332,31 +350,8 @@ article {
     background: #e53935;
 }
 
-.file-list {
-    max-height: 400px;
-    overflow-y: auto;
-    background: var(--pico-background-color);
-    border-radius: var(--pico-border-radius);
-    padding: 1rem;
-    margin: 0;
-}
-
-.file-list li {
-    padding: 0.5rem;
-    border-bottom: 1px solid var(--pico-muted-border-color);
-}
-
-.file-list li:last-child {
-    border-bottom: none;
-}
-
 code {
     font-weight: normal !important;
-}
-
-.file-list code {
-    font-size: 0.875rem;
-    vertical-align: baseline;
 }`;
         return new Response(css, {
           headers: {

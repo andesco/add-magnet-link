@@ -15,39 +15,20 @@ article {
 
 .status-badge.success {
     background: #43a047;
+    background-color: #43a047;
 }
 
 .status-badge.warning {
     background: #fb8c00;
+    background-color: #fb8c00;
 }
 
 .status-badge.error {
     background: #e53935;
-}
-
-.file-list {
-    max-height: 400px;
-    overflow-y: auto;
-    background: var(--pico-background-color);
-    border-radius: var(--pico-border-radius);
-    padding: 1rem;
-    margin: 0;
-}
-
-.file-list li {
-    padding: 0.5rem;
-    border-bottom: 1px solid var(--pico-muted-border-color);
-}
-
-.file-list li:last-child {
-    border-bottom: none;
+    background-color: #e53935;
 }
 
 code {
     font-weight: normal !important;
 }
 
-.file-list code {
-    font-size: 0.875rem;
-    vertical-align: baseline;
-}
