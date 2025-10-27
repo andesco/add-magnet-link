@@ -8,8 +8,8 @@
      "secret:local": "node -e \"process.stdout.write(require('crypto').randomBytes(32).toString('base64'))\" | wrangler secret put SECRET_KEY --config wrangler.local.toml",
      "deploy": "npm run secret && wrangler deploy",
      "deploy:local": "npm run secret:local && wrangler deploy --config wrangler.local.toml",
-     "dev": "wrangler dev",
-     "dev:local": "wrangler dev --config wrangler.local.toml"
+     "dev": "npm run secret && wrangler dev",
+     "dev:local": "npm run secret:local && wrangler dev --config wrangler.local.toml"
    },
   "keywords": [
     "cloudflare",

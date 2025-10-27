@@ -132,7 +132,7 @@ function formatBytes(bytes) {
 
 function getResultPage(result) {
   const isSuccess = result.status === 'success';
-  const statusColor = isSuccess ? '#43a047' : '#fb8c00';
+  const statusClass = isSuccess ? 'success' : 'warning';
 
   return `<!DOCTYPE html>
 <html>
@@ -141,44 +141,13 @@ function getResultPage(result) {
     <title>Add Magnet Link: ${isSuccess ? 'Success' : 'Warning'}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-    <style>
-        article { margin-top: 2rem; }
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 1rem;
-            background: ${statusColor};
-            color: white;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        .file-list {
-            max-height: 400px;
-            overflow-y: auto;
-            background: var(--pico-background-color);
-            border-radius: var(--pico-border-radius);
-            padding: 1rem;
-            margin: 0;
-        }
-        .file-list li {
-            padding: 0.5rem;
-            border-bottom: 1px solid var(--pico-muted-border-color);
-        }
-        .file-list li:last-child { border-bottom: none; }
-        code {
-            font-weight: normal !important;
-        }
-        .file-list code {
-            font-size: 0.875rem;
-            vertical-align: baseline;
-        }
-    </style>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <main class="container">
         <article>
             <header>
-                <span class="status-badge">${result.status.toUpperCase().replace(/_/g, ' ')}</span>
+                <span class="status-badge ${statusClass}">${result.status.toUpperCase().replace(/_/g, ' ')}</span>
                 <h2>${result.message}</h2>
             </header>
 
@@ -187,7 +156,7 @@ function getResultPage(result) {
             ` : ''}
 
             ${result.api_error ? `
-            <p><mark><strong>API Warning:</strong> ${result.api_error}</mark></p>
+            <code style="display: block; white-space: pre-wrap; padding: 0.75rem; background: var(--pico-code-background-color); border-radius: var(--pico-border-radius);">${result.api_error}</code>
             ` : ''}
 
             ${result.files && result.files.length > 0 ? `
@@ -211,9 +180,7 @@ function getResultPage(result) {
      <title>Add Magnet Link</title>
      <meta name="viewport" content="width=device-width, initial-scale=1">
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-     <style>
-         article { margin-top: 2rem; }
-     </style>
+     <link rel="stylesheet" href="/style.css">
  </head>
  <body>
      <main class="container">
@@ -252,7 +219,7 @@ function getResultPage(result) {
  </html>`;
  }
 
-function getAuthPage() {
+function getAuthPage(returnPath = '/') {
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -260,9 +227,7 @@ function getAuthPage() {
     <title>Add Magnet Link: Authenticate</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-    <style>
-        article { margin-top: 2rem; }
-    </style>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <main class="container">
@@ -283,6 +248,8 @@ function getAuthPage() {
     </main>
 
     <script>
+        const returnPath = ${JSON.stringify(returnPath)};
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const status = document.getElementById('status');
@@ -305,7 +272,7 @@ function getAuthPage() {
 
                 if (response.ok) {
                     status.innerHTML = '<p style="color: var(--pico-ins-color)">✓ Authentication successful! Redirecting...</p>';
-                    setTimeout(() => window.location.href = '/', 1000);
+                    setTimeout(() => window.location.href = returnPath, 1000);
                 } else {
                     const error = await response.text();
                     status.innerHTML = '<p style="color: var(--pico-del-color)">✗ ' + error + '</p>';
@@ -333,6 +300,69 @@ export default {
         return new Response('Server configuration error: SECRET_KEY required', {
           status: 500,
           headers: { 'Content-Type': 'text/plain' }
+        });
+      }
+
+      // Serve style.css
+      if (url.pathname === '/style.css') {
+        const css = `/* Common styles */
+article {
+    margin-top: 2rem;
+}
+
+/* Result page styles */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    color: white;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.status-badge.success {
+    background: #43a047;
+}
+
+.status-badge.warning {
+    background: #fb8c00;
+}
+
+.status-badge.error {
+    background: #e53935;
+}
+
+.file-list {
+    max-height: 400px;
+    overflow-y: auto;
+    background: var(--pico-background-color);
+    border-radius: var(--pico-border-radius);
+    padding: 1rem;
+    margin: 0;
+}
+
+.file-list li {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.file-list li:last-child {
+    border-bottom: none;
+}
+
+code {
+    font-weight: normal !important;
+}
+
+.file-list code {
+    font-size: 0.875rem;
+    vertical-align: baseline;
+}`;
+        return new Response(css, {
+          headers: {
+            'Content-Type': 'text/css',
+            'Cache-Control': 'public, max-age=3600'
+          }
         });
       }
 
@@ -446,12 +476,13 @@ export default {
          }
 
          // Show auth page (clearing any invalid cookie)
+         const returnPath = url.searchParams.get('return') || '/';
          const headers = { 'Content-Type': 'text/html' };
          if (sidCookie) {
            // Had a cookie but it was invalid, clear it
            headers['Set-Cookie'] = 'auth=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/';
          }
-         return new Response(getAuthPage(), { headers });
+         return new Response(getAuthPage(returnPath), { headers });
        }
 
        // Show home page at root if authenticated
@@ -548,10 +579,9 @@ export default {
 
         sidCookie = await verifyCookie(authCookie, secretKey);
         if (!sidCookie) {
-          return new Response('Authentication required', {
-            status: 401,
-            headers: { 'Content-Type': 'text/plain' }
-          });
+          // Store the original path to redirect back after auth
+          const returnPath = encodeURIComponent(url.pathname + url.search);
+          return Response.redirect(`${url.origin}/auth?return=${returnPath}`, 302);
         }
       }
 
@@ -583,17 +613,39 @@ export default {
         body: torrentFormData
       });
 
-      // Note: Some qBittorrent implementations (like Decypharr) may return 500 but still add the torrent
-      // We'll continue even on error to try fetching the file list
-      const addSuccess = addTorrentResponse.ok;
-      let addErrorMessage = null;
-
-      if (!addSuccess) {
+      // Check if API request succeeded (HTTP 200)
+      if (!addTorrentResponse.ok) {
         const errorText = await addTorrentResponse.text();
-        addErrorMessage = `API returned ${addTorrentResponse.status}: ${errorText || 'No error details'}`;
+        let status;
+        let message;
+
+        // HTTP 400 is a warning (torrent may be accepted but not ready)
+        if (addTorrentResponse.status === 400) {
+          status = 'warning';
+          message = 'API Warning';
+        } else {
+          // 415, 4xx, 5xx are errors
+          status = 'error';
+          message = 'API Error';
+        }
+
+        const result = {
+          status: status,
+          message: message,
+          infohash: null,
+          api_error: errorText || 'Unknown error',
+          api_status: addTorrentResponse.status,
+          files: []
+        };
+
+        return new Response(getResultPage(result), {
+          status: 200, // Return 200 to browser, show error in UI
+          headers: { 'Content-Type': 'text/html' }
+        });
       }
 
-      // Extract infohash from magnet link or torrent identifier
+      // API returned 200 - torrent was added successfully
+      // Now extract infohash and try to fetch file details
       let infohash = '';
       if (torrentIdentifier.startsWith('magnet:')) {
         // Extract from magnet link - look for btih parameter
@@ -608,6 +660,7 @@ export default {
 
       // Fetch torrent files if we have an infohash
       let files = [];
+      let filesFetched = false;
       if (infohash) {
         try {
           // Wait a moment for the torrent to be added to qBittorrent
@@ -619,6 +672,7 @@ export default {
 
           if (filesResponse.ok) {
             files = await filesResponse.json();
+            filesFetched = files.length > 0;
           }
         } catch (error) {
           // Non-fatal error - just continue without file list
@@ -626,12 +680,19 @@ export default {
         }
       }
 
-      // Return result page with torrent info and files
+      // Determine final status based on Option A logic:
+      // - success: 200 + files fetched
+      // - warning: 200 but no files (couldn't get metadata)
       const result = {
-        status: addSuccess ? 'success' : 'partial_success',
-        message: addSuccess ? 'Magnet added successfully' : 'Magnet add request completed with warnings',
+        status: filesFetched ? 'success' : 'warning',
+        message: filesFetched
+          ? 'Magnet added successfully'
+          : 'No Files',
         infohash: infohash || 'unknown',
-        api_error: addErrorMessage,
+        api_error: !filesFetched && infohash
+          ? 'No file details available.'
+          : null,
+        api_status: null,
         files: files.map(f => ({
           name: f.name,
           size: f.size,
@@ -640,7 +701,7 @@ export default {
       };
 
        return new Response(getResultPage(result), {
-         status: addSuccess ? 200 : 207, // 207 Multi-Status for partial success
+         status: 200,
          headers: { 'Content-Type': 'text/html' }
        });
    } catch (error) {
