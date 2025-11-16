@@ -96,8 +96,7 @@ Variable       | Description                   | Type
 > [!Note]
 > GitHub does not render `magnet:` scheme links.
 
-[qBittorrent API]: https://github.com/qbittorrent/qBittorrent/wiki#WebUI-API
-
-[Cosmos Laundromat]: <magnet:?xt=urn:btih:c9e15763f722f23e98a29decdfae341b98d53056&amp;dn=Cosmos+Laundromat">
-[Sintel]: <magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&amp;dn=Sintel
+[qBittorrent API]: <https://github.com/qbittorrent/qBittorrent/wiki#WebUI-API>
+[Cosmos Laundromat]: <magnet:?xt=urn:btih:c9e15763f722f23e98a29decdfae341b98d53056&amp;dn=Cosmos+Laundromat>
+[Sintel]: <magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&amp;dn=Sintel>
 [Tears of Steel]: <magnet:?xt=urn:btih:209c8226b299b308beaf2b9cd3fb49212dbd13ec&amp;dn=Tears+of+Steel>
